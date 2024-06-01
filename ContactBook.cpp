@@ -160,16 +160,24 @@ void ContactBook::Find_Per1()//? 精确查找
         string xname;
         cout<<"请输入姓名： ";
         cin>>xname;
-        while(curr){
+        int num=0;
+        while(curr){    
             if(curr->name==xname)
            {
-            cout<<"找到该联系人！~"<<endl;
+            num++;
+            if(num==1)
+            {
+            cout<<"找到该联系人！"<<endl;
             curr->ShowInfor();
-            return ;
+            }
+            else if(num>1){
+                cout<<"还查找到可能的同名联系人："<<endl;
+                curr->ShowInfor();
+            }
             }
             curr=curr->next;
         }
-        if(curr==NULL) cout<<"该联系人不存在！！"<<endl;
+        if(num==0&&curr==NULL) cout<<"该联系人不存在！！"<<endl;
         break;
         }
         case 2:{
@@ -236,7 +244,7 @@ void ContactBook::Find_Per3(){
     int num=0;
     cout<<"查找分组："<<xtype<<endl<<endl;
     while(curr){
-        if(curr->type==xtype){
+        if(curr->type.find(xtype)!=-1){
             curr->ShowInfor();
             num++;
         }
@@ -399,6 +407,16 @@ void ContactBook::Del_Per(){
             string s;
             cout<<"请输入姓名：";
             cin>>s;
+            //* 先检查重名联系人
+            int num=0;
+            while(curr){
+                if(curr->name==s) num++;
+                curr=curr->next;
+            }
+            curr=head;
+            //* 若无重名联系人
+            if(num==1)
+            {
             if(head->name==s)//* 如果删除的的是头结点
                 {   
                     Delete(pre,curr);
@@ -412,10 +430,45 @@ void ContactBook::Del_Per(){
                 pre=curr;
                 curr=curr->next;
             }
+            }
+            else if(num==0)
+            {
             cout<<"查无此人！"<<endl;
             return;
-        }
+            }
+            //* 若存在重名联系人
+            else if(num>1){
+                int k=1;
+                cout<<"为你查找到可能的联系人："<<endl;
+                while(curr){
+                    if(curr->name==s) {
+                        cout<<"第"<<k<<"位："<<endl;
+                        curr->id=k;
+                        curr->ShowInfor();
+                        k++;
+                    }
+                    curr=curr->next;
+                }
+                curr=head;
+                cout<<"请输入你想删除的联系人的编号："<<endl;
+                int index;
+                cin>>index;
+               if(head->id==index)//* 如果删除的的是头结点
+                {   
+                    Delete(pre,curr);
+                    return ;
+                }
+            while(curr){
+                if(curr->id==index){
+                    Delete(pre,curr);
+                    return ;
+                }
+                pre=curr;
+                curr=curr->next;
+            }
+            }
         
+        }
            case 2:
         {
             string s;
